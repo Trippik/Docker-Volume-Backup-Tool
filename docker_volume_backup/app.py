@@ -43,10 +43,14 @@ run_state = 0
 while(loop == True):
     if(int(datetime.datetime.now().strftime("%H")) == int(os.environ["REPORTING_HOUR"])):
         if(run_state == 0):
+            logging.warning("Backup Starting")
             filename = generate_file_name()
             create_backup_tar(filename)
+            logging.warning("Backup Tar Created")
             save_file(filename)
+            logging.warning("Backup Tar Sent to Server")
             os.remove(filename)
             run_state = 1
+            logging.warning("---------------------")
     elif(int(datetime.datetime.now().strftime("%H")) != int(os.environ["REPORTING_HOUR"]) and run_state == 1):
         run_state = 0
