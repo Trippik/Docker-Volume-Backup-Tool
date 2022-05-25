@@ -8,7 +8,7 @@ import logging
 import tarfile
 from venv import create
 import ftplib
-from smb.SMBConnection import SMBConnection
+import pysftp
 
 #Basic setup
 vol_directory = "/vols_path/"
@@ -34,9 +34,12 @@ def save_file(filename):
         session.storbinary('STOR ' + filename, file)
         file.close()
         session.quit()
-    elif(mode == "SMB"):
-        conn = SMBConnection(os.environ['USERNAME'],os.environ['PASSWORD'],"Docker-Volume-Backup-Script",os.environ['STORAGE-SERVER'],domain=os.environ['DOMAIN'],use_ntlm_v2=True,is_direct_tcp=True)
-        conn.connect(os.environ['STORAGE-SERVER'], 445)
+    elif(mode == "SFTP"):
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None 
+        with pysftp.Connection(host=os.environ["STORAGE-SERVER"], username=os.environ['USERNAME'], password=os.environ['PASSWORD'], port=int(os.environ['PORT']), cnopts=cnopts) as sftp:
+            remoteFilePath = "/" + filename
+            sftp.put(filename, remoteFilePath)
 
 
 #------------------------------------
