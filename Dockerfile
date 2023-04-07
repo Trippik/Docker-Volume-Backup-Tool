@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:23.04
 
 MAINTAINER Cameron Trippick "trippickc@gmail.com"
 
@@ -8,12 +8,30 @@ RUN apt-get update -y && \
 
 COPY ./requirements.txt /requirements.txt
 
-WORKDIR /
-
-RUN pip3 install -r requirements.txt
+COPY ./setup.py /setup.py
 
 COPY . /
 
-ENTRYPOINT [ "python3" ]
+WORKDIR /
 
-CMD [ "docker_volume_backup/app.py" ]
+RUN python3 setup.py install
+
+ENV TARGET-MODE = "Placeholder"
+
+ENV STORAGE-SERVER = "Placeholder"
+
+ENV USERNAME = "Placeholder"
+
+ENV PASSWORD = "Placeholder"
+
+ENV PORT = "Placeholder"
+
+ENV NUMBER-OF-BACKUPS = "Placeholder"
+
+ENV REPORTING_HOUR = "Placeholder"
+
+ENV ACCESS-KEY-ID = "Placeholder"
+
+ENV SECRET-KEY = "Placeholder"
+
+CMD [ "Docker-Volume-Backup-Tool" ]

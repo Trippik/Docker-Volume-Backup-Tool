@@ -1,1 +1,4 @@
 pysftp
+boto3
+moto
+ipython
