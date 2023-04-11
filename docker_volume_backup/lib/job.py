@@ -68,6 +68,7 @@ class Job:
         dir_list = s3_client.list_objects_in_bucket()
         number_of_backups = len(dir_list)
         no_to_delete = number_of_backups - max_no
+        count = 0
         for file in dir_list:
             if(count < no_to_delete):
                 s3_client.delete_object(file)
@@ -82,7 +83,7 @@ class Job:
             self.save_file_sftp()
             self.remove_old_files_sftp()
         elif self.mode == 'S3':
-            s3_client = S3Client(os.environ["BUCKET"])
+            s3_client = S3Client()
             self.save_file_s3(s3_client)
             self.remove_old_files_s3(s3_client)
         os.remove(self.filename)

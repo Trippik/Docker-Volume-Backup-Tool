@@ -2,12 +2,12 @@ import boto3
 import os
 
 class S3Client:
-    def __init__(self, bucket: str) -> None:
+    def __init__(self) -> None:
         access_key = os.environ["ACCESS-KEY-ID"]
         secret_key = os.environ["SECRET-KEY"]
         self.session = boto3.session.Session(aws_access_key_id=access_key, aws_secret_access_key=secret_key)
         self.client = self.session.client('s3')
-        self.bucket = os.environ["bucket"]
+        self.bucket = os.environ["BUCKET"]
 
     def list_objects_in_bucket(self):
         response = self.client.list_objects_v2(Bucket=self.bucket)
