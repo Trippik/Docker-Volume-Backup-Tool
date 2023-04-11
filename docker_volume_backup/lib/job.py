@@ -75,15 +75,21 @@ class Job:
             count = count + 1
 
     def run(self):
+        logging.info("Creating backup tar file")
         self.create_backup_tar()
         if self.mode == 'FTP':
             self.save_file_ftp()
+            logging.info("File Saved to FTP")
             self.remove_old_files_ftp()
         elif self.mode == 'SFTP':
             self.save_file_sftp()
+            logging.info("Backup saved to SFTP")
             self.remove_old_files_sftp()
+            logging.info("Old backup files removed from SFTP")
         elif self.mode == 'S3':
             s3_client = S3Client()
             self.save_file_s3(s3_client)
+            logging.info("Backup saved to S3")
             self.remove_old_files_s3(s3_client)
+            logging.info("Old backup files removed from S3")
         os.remove(self.filename)
