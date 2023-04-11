@@ -36,4 +36,6 @@ ENV ACCESS-KEY-ID = "Placeholder"
 
 ENV SECRET-KEY = "Placeholder"
 
+ENV BUCKET = "Placeholder"
+
 CMD [ "Docker-Volume-Backup-Tool" ]

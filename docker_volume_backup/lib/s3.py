@@ -7,7 +7,7 @@ class S3Client:
         secret_key = os.environ["SECRET-KEY"]
         self.session = boto3.session.Session(aws_access_key_id=access_key, aws_secret_access_key=secret_key)
         self.client = self.session.client('s3')
-        self.bucket = bucket
+        self.bucket = os.environ["bucket"]
 
     def list_objects_in_bucket(self):
         response = self.client.list_objects_v2(Bucket=self.bucket)

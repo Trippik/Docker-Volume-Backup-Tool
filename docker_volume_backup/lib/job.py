@@ -1,6 +1,19 @@
+import os
+import datetime
+import logging
+import tarfile
+from venv import create
+import ftplib
+import pysftp
+
+
+from docker_volume_backup.lib.s3 import S3Client
 class Job:
-    def __init__(self):
+    def __init__(self, mode: str, vol_directory: str):
         self.filename = self.generate_file_name()
+        self.mode = mode
+        self.vol_directory = vol_directory
+
 
 
     def generate_file_name(self):
@@ -10,7 +23,7 @@ class Job:
 
     def create_backup_tar(self):
         with tarfile.open(self.filename, "w:gz") as tar:
-            tar.add(vol_directory, arcname=os.path.basename(vol_directory))
+            tar.add(self.vol_directory, arcname=os.path.basename(self.vol_directory))
 
     def save_file_ftp(self):
         session = ftplib.FTP(os.environ["STORAGE-SERVER"],os.environ['USERNAME'],os.environ['PASSWORD'])
@@ -27,6 +40,9 @@ class Job:
             logging.error(dir_list)
             remoteFilePath = "/" + self.filename
             sftp.put(self.filename, remoteFilePath)
+        
+    def save_file_s3(self, s3_client):
+        s3_client.upload_object(self.filename, self.filename)
 
 
     def remove_old_files_ftp(self):
@@ -46,13 +62,27 @@ class Job:
                     remoteFilePath = "/" + file
                     sftp.remove(remoteFilePath)
                 count = count + 1
+    
+    def remove_old_files_s3(self, s3_client):
+        max_no = int(os.environ["NUMBER-OF-BACKUPS"])
+        dir_list = s3_client.list_objects_in_bucket()
+        number_of_backups = len(dir_list)
+        no_to_delete = number_of_backups - max_no
+        for file in dir_list:
+            if(count < no_to_delete):
+                s3_client.delete_object(file)
+            count = count + 1
 
     def run(self):
         self.create_backup_tar()
-        if mode == 'FTP':
+        if self.mode == 'FTP':
             self.save_file_ftp()
             self.remove_old_files_ftp()
-        elif mode == 'SFTP':
+        elif self.mode == 'SFTP':
             self.save_file_sftp()
             self.remove_old_files_sftp()
+        elif self.mode == 'S3':
+            s3_client = S3Client(os.environ["BUCKET"])
+            self.save_file_s3(s3_client)
+            self.remove_old_files_s3(s3_client)
         os.remove(self.filename)
