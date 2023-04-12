@@ -1,4 +1,4 @@
-FROM ubuntu:23.04
+FROM python:3.8
 
 MAINTAINER Cameron Trippick "trippickc@gmail.com"
 
@@ -19,6 +19,8 @@ RUN pip3 install -r requirements.txt
 RUN python3 setup.py install
 
 ENV TARGET-MODES = "['Placeholder','Placeholder']"
+
+ENV SUB-DIRECTORIES = "['beep/boop', 'boop/beep']"
 
 ENV STORAGE-SERVER = "Placeholder"
 

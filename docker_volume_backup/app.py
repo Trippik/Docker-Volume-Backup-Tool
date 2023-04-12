@@ -14,6 +14,8 @@ from docker_volume_backup.lib.job import Job
 vol_directory = "/vols_path/"
 modes = os.environ["TARGET-MODES"]
 modes = ast.literal_eval(modes)
+sub_directories = os.environ["SUB-DIRECTORIES"]
+sub_directories = ast.literal_eval(sub_directories)
 logging.basicConfig(level=logging.INFO)
 
 #------------------------------------
@@ -32,10 +34,16 @@ def main():
                     running_modes.remove('FTP')
                 else:
                     running_modes = modes
+                full_directories = []
+                if len(sub_directories) > 0:
+                    for sub_directory in sub_directories:
+                        full_directories.append(vol_directory + sub_directory)
+                else:
+                    full_directories = [vol_directory]
                 for mode in running_modes:
                     try:
                         logging.info("Saving backups to %s", mode)
-                        job = Job(mode, vol_directory)
+                        job = Job(mode, full_directories)
                         job.run()
                     except Exception:
                         logging.exception("Error when completing backup to %s", mode)

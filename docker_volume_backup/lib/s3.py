@@ -9,7 +9,7 @@ class S3Client:
         self.client = self.session.client('s3')
         self.bucket = os.environ["BUCKET"]
 
-    def list_objects_in_bucket(self):
+    def list_objects_in_bucket(self) -> None:
         response = self.client.list_objects_v2(Bucket=self.bucket)
         objects_in_bucket = []
         try:
@@ -19,8 +19,8 @@ class S3Client:
             pass
         return(objects_in_bucket)
     
-    def upload_object(self, path, key):
+    def upload_object(self, path: str, key: str) -> None:
         self.client.upload_file(path, self.bucket, key)
     
-    def delete_object(self, key):
+    def delete_object(self, key: str) -> None:
         self.client.delete_object(Bucket = self.bucket, Key = key)
