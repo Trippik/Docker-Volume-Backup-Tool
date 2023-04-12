@@ -21,9 +21,10 @@ class Job:
         filename = filename + ".tar.gz"
         return(filename)
 
-    def create_backup_tar(self, directory: str) -> None:
+    def create_backup_tar(self, directories: list) -> None:
         with tarfile.open(self.filename, "w:gz") as tar:
-            tar.add(directory, arcname=os.path.basename(directory))
+            for directory in directories:
+                tar.add(directory, arcname=os.path.basename(directory))
 
     def save_file_ftp(self) -> None:
         session = ftplib.FTP(os.environ["STORAGE-SERVER"],os.environ['USERNAME'],os.environ['PASSWORD'])
@@ -77,9 +78,7 @@ class Job:
 
     def run(self) -> None:
         logging.info("Creating backup tar file")
-        for directory in self.vol_directories:
-            logging.info("Adding directory %s to backup tar", directory)
-            self.create_backup_tar(directory)
+        self.create_backup_tar(self.vol_directories)
         if self.mode == 'FTP':
             self.save_file_ftp()
             logging.info("File Saved to FTP")
