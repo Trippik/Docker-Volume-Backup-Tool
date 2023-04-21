@@ -43,7 +43,7 @@ class Job:
             sftp.put(self.filename, remoteFilePath)
         
     def save_file_s3(self, s3_client) -> None:
-        logging.info("Starting upload of {}", self.filename)
+        logging.info("Starting upload of %s", self.filename)
         s3_client.upload_object(self.filename, self.filename)
 
 
