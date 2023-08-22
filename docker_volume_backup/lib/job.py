@@ -6,45 +6,40 @@ from venv import create
 import ftplib
 import pysftp
 
+from typing import List
+
 
 from docker_volume_backup.lib.s3 import S3Client
+from docker_volume_backup.lib.volume import Volume
 class Job:
-    def __init__(self, mode: str, vol_directories: list) -> None:
-        self.filename = self.generate_file_name()
-        self.mode = mode
-        self.vol_directories = vol_directories
+    def __init__(self, modes: List[str], volumes: list) -> None:
+        self.foldername = self.generate_folder_name()
+        self.modes = modes
+        self.volumes = volumes
 
+    def generate_folder_name(self) -> str:
+        foldername = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        return(foldername)
 
-
-    def generate_file_name(self) -> str:
-        filename = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        filename = filename + ".tar.gz"
-        return(filename)
-
-    def create_backup_tar(self, directories: list) -> None:
-        with tarfile.open(self.filename, "w:gz") as tar:
-            for directory in directories:
-                tar.add(directory, arcname=os.path.basename(directory))
-
-    def save_file_ftp(self) -> None:
+    def save_file_ftp(self, filename: str) -> None:
         session = ftplib.FTP(os.environ["STORAGE-SERVER"],os.environ['USERNAME'],os.environ['PASSWORD'])
-        file = open(self.filename,'rb')
-        session.storbinary('STOR ' + self.filename, file)
+        file = open(filename,'rb')
+        session.storbinary('STOR ' + filename, file)
         file.close()
         session.quit()
 
-    def save_file_sftp(self) -> None:
+    def save_file_sftp(self, filename: str) -> None:
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None 
         with pysftp.Connection(host=os.environ["STORAGE-SERVER"], username=os.environ['USERNAME'], password=os.environ['PASSWORD'], port=int(os.environ['PORT']), cnopts=cnopts) as sftp:
             dir_list= sftp.listdir()
             logging.error(dir_list)
-            remoteFilePath = "/" + self.filename
-            sftp.put(self.filename, remoteFilePath)
+            remoteFilePath = "/" + filename
+            sftp.put(filename, remoteFilePath)
         
-    def save_file_s3(self, s3_client) -> None:
-        logging.info("Starting upload of %s", self.filename)
-        s3_client.upload_object(self.filename, self.filename)
+    def save_file_s3(self, s3_client: S3Client, filename: str) -> None:
+        logging.info("Starting upload of %s", filename)
+        s3_client.upload_object(filename, filename)
 
 
     def remove_old_files_ftp(self) -> None:
@@ -77,21 +72,20 @@ class Job:
             count = count + 1
 
     def run(self) -> None:
-        logging.info("Creating backup tar file")
-        self.create_backup_tar(self.vol_directories)
-        if self.mode == 'FTP':
-            self.save_file_ftp()
-            logging.info("File Saved to FTP")
-            self.remove_old_files_ftp()
-        elif self.mode == 'SFTP':
-            self.save_file_sftp()
-            logging.info("Backup saved to SFTP")
-            self.remove_old_files_sftp()
-            logging.info("Old backup files removed from SFTP")
-        elif self.mode == 'S3':
-            s3_client = S3Client()
-            self.save_file_s3(s3_client)
-            logging.info("Backup saved to S3")
-            self.remove_old_files_s3(s3_client)
-            logging.info("Old backup files removed from S3")
-        os.remove(self.filename)
+        logging.info("Starting job")
+        for mode in self.modes:
+            if mode == 'S3':
+                s3_client = S3Client()
+            for volume in self.volumes:
+                logging.info("Processing %s ", volume)
+                volume = Volume(volume)
+                if self.mode == 'S3':
+                    self.save_file_s3(s3_client=s3_client, filename=volume.filename)
+                    logging.info("Backup saved to S3")
+                elif self.mode == 'SFTP':
+                    self.save_file_sftp(filename=volume.filename)
+                    logging.info("Backup saved to SFTP")
+                elif self.mode == 'FTP':
+                    self.save_file_ftp(filename=volume.filename)
+                    logging.info('Backup saved to FTP')
+                volume.delete_tarfile()
