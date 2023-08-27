@@ -1,3 +1,4 @@
 pysftp
 boto3
 moto
+freezegun

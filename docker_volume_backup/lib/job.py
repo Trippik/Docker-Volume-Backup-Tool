@@ -79,6 +79,7 @@ class Job:
             for volume in self.volumes:
                 logging.info("Processing %s ", volume)
                 volume = Volume(volume)
+                volume.create_tarfile()
                 if self.mode == 'S3':
                     self.save_file_s3(s3_client=s3_client, filename=volume.filename)
                     logging.info("Backup saved to S3")
