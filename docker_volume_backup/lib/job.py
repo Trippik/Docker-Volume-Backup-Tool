@@ -38,9 +38,7 @@ class Job:
             sftp.put(filename, remoteFilePath)
         
     def save_file_s3(self, s3_client: S3Client, filepath: str, filename: str) -> None:
-        logging.info(type(filename))
         logging.info("Starting upload of %s", filename)
-        logging.info()
         s3_client.upload_object(path=filepath, key=filename)
 
 
@@ -82,13 +80,13 @@ class Job:
                 logging.info("Processing %s ", volume)
                 volume = Volume(volume)
                 volume.create_tarfile()
-                if self.mode == 'S3':
-                    self.save_file_s3(s3_client=s3_client, filepath=volume.filepath, filename=volume.filename)
+                if mode == 'S3':
+                    self.save_file_s3(s3_client=s3_client, filepath=volume.filename, filename=volume.filename)
                     logging.info("Backup saved to S3")
-                elif self.mode == 'SFTP':
+                elif mode == 'SFTP':
                     self.save_file_sftp(filename=volume.filename)
                     logging.info("Backup saved to SFTP")
-                elif self.mode == 'FTP':
+                elif mode == 'FTP':
                     self.save_file_ftp(filename=volume.filename)
                     logging.info('Backup saved to FTP')
                 volume.delete_tarfile()

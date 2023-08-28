@@ -20,8 +20,8 @@ class Volume:
         return(filename.replace('/', '-'))
     
     def create_tarfile(self) -> None:
-        with tarfile.open(self.filepath, "w:gz") as tar:
-            tar.add(self.volume_path, arcname=os.path.basename(self.volume_path))
+        with tarfile.open(self.filename, "w:gz") as tar:
+            tar.add(self.volume_path, arcname="")
 
     def delete_tarfile(self) -> None:
-        os.remove(self.filepath)
+        os.remove(self.filename)
