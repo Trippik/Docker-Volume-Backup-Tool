@@ -7,13 +7,17 @@ class Volume:
     def __init__(self, volume_path):
         self.volume_path = volume_path
         self.filepath = self.generate_file_path()
+        self.filename_without_date = self.sanitize_file_path()
         self.filename = self.generate_file_name()
 
     def generate_file_path(self) -> str:
         filename = self.volume_path + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
         filename = filename + ".tar.gz"
         return(filename)
-    
+
+    def sanitize_file_path(self) -> str:
+        return(self.volume_path.replace('/', '-'))
+
     def generate_file_name(self) -> str:
         filename = self.volume_path + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
         filename = filename + ".tar.gz"
