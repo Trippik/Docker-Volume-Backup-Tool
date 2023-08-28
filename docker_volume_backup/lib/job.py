@@ -37,9 +37,11 @@ class Job:
             remoteFilePath = "/" + filename
             sftp.put(filename, remoteFilePath)
         
-    def save_file_s3(self, s3_client: S3Client, filename: str) -> None:
+    def save_file_s3(self, s3_client: S3Client, filepath: str, filename: str) -> None:
+        logging.info(type(filename))
         logging.info("Starting upload of %s", filename)
-        s3_client.upload_object(filename, filename)
+        logging.info()
+        s3_client.upload_object(path=filepath, key=filename)
 
 
     def remove_old_files_ftp(self) -> None:
@@ -81,7 +83,7 @@ class Job:
                 volume = Volume(volume)
                 volume.create_tarfile()
                 if self.mode == 'S3':
-                    self.save_file_s3(s3_client=s3_client, filename=volume.filename)
+                    self.save_file_s3(s3_client=s3_client, filepath=volume.filepath, filename=volume.filename)
                     logging.info("Backup saved to S3")
                 elif self.mode == 'SFTP':
                     self.save_file_sftp(filename=volume.filename)
