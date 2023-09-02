@@ -1,10 +1,12 @@
-CREATE TABLE volumes (
+CREATE TABLE IF NOT EXISTS volumes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    volume_name VARCHAR(255),
+    volume_name TEXT NOT NULL
 );
 
-CREATE TABLE backups (
+CREATE TABLE IF NOT EXISTS backups (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     volume INTEGER NOT NULL,
     backup_date datetime,
+    FOREIGN KEY (volume) 
+      REFERENCES volumes (id)
 ); 
