@@ -5,24 +5,39 @@ import logging
 
 class Database:
     def __init__(self) -> None:
-        self.filepath = "/databases/volume_backup_tool.db"
-        self.cursor = self.create_cursor()
+        self.filepath = os.environ['DB-FILEPATH']
+        self.conn = self.create_connection()
+        self.cursor = self.conn.cursor()
         self.build_db()
         
 
     def db_exists(self) -> None:
         return os.path.isfile(self.filepath)
     
-
-    def create_cursor(self) -> sqlite3.Cursor:
+    
+    def create_connection(self):
         conn = sqlite3.connect(self.filepath)
-        return conn.cursor()
+        return conn
     
 
     def build_db(self) -> None:
         schema_filepath = "schema.sql"
         self.run_commands_from_file(schema_filepath)
 
+    def run_command(self, command: str) -> None:
+        try:
+            self.cursor.execute(command)
+            self.conn.commit()
+        except OperationalError as msg:
+            logging.error("Command skipped: ", msg)
+
+    def run_query(self, query: str) -> tuple:
+        try:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+        except OperationalError as msg:
+            logging.error("Command skipped: ", msg)
+        return(rows)
 
     def run_commands_from_file(self, filepath: str) -> None:
         # Open and read the file as a single buffer
@@ -39,6 +54,8 @@ class Database:
             # For example, if the tables do not yet exist, this will skip over
             # the DROP TABLE commands
             try:
-                self.cursor.execute(command)
+                self.run_command(command)
             except OperationalError as msg:
                 logging.error("Command skipped: ", msg)
+
+db = Database()
