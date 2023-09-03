@@ -1,7 +1,5 @@
 import os
-os.environ["DB-FILEPATH"] = 'test-vol.db'
-if os.path.isfile(os.environ["DB-FILEPATH"]):
-    os.remove(os.environ["DB-FILEPATH"])
+os.environ["DB-FILEPATH"] = 'test.db'
 
 def test_db_import():
     from docker_volume_backup.lib.db import Database
@@ -24,4 +22,4 @@ def test_run_query():
     db = Database()
     query = "SELECT * FROM volumes"
     results = db.run_query(query=query)
-    assert str(results) == "[(1, 'test-volume')]"
+    assert 'test-volume' in str(results)

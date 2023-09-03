@@ -1,5 +1,10 @@
 import datetime
 from freezegun import freeze_time
+import os
+import os
+os.environ["DB-FILEPATH"] = 'test-vol.db'
+if os.path.isfile(os.environ["DB-FILEPATH"]):
+    os.remove(os.environ["DB-FILEPATH"])
 
 def test_volume_import():
     from docker_volume_backup.lib.volume import Volume
