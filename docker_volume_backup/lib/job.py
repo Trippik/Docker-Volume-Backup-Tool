@@ -81,7 +81,7 @@ class Job:
                 volume = Volume(volume)
                 volume.create_tarfile()
                 if mode == 'S3':
-                    self.save_file_s3(s3_client=s3_client, filepath=volume.filename, filename=volume.filename)
+                    self.save_file_s3(s3_client=s3_client, filepath=volume.filename, filename=str(volume.id))
                     logging.info("Backup saved to S3")
                 elif mode == 'SFTP':
                     self.save_file_sftp(filename=volume.filename)

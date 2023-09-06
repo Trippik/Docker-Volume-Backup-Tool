@@ -22,3 +22,14 @@ def test_filename_generation():
     volume = Volume(volume_path='/test')
     assert volume.filename == '-test_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S") + '.tar.gz'
     assert type(volume.filename) is str
+
+def test_backup_record():
+    from docker_volume_backup.lib.volume import Volume
+    from docker_volume_backup.lib.db import Database
+    db = Database()
+    volume = Volume(volume_path='/test')
+    current_backups = int(db.run_query('SELECT COUNT(*) FROM backups')[0][0])
+    volume.write_backup_record()
+    assert int(db.run_query('SELECT COUNT(*) FROM backups')[0][0]) == current_backups + 1
+    backup_db_entry = db.run_query('SELECT * FROM backups LIMIT 1')[0]
+    assert len(backup_db_entry) == 3

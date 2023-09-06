@@ -3,3 +3,5 @@ dist/
 Docker_Volume_Backup_Tool.egg-info/
 Docker-Volume-Backup-Tool.tar
 __pycache__/
+test-vol.db
+demofile3.txt
