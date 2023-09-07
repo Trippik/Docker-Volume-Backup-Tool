@@ -59,17 +59,6 @@ class Job:
                     remoteFilePath = "/" + file
                     sftp.remove(remoteFilePath)
                 count = count + 1
-    
-    def remove_old_files_s3(self, s3_client: S3Client) -> None:
-        max_no = int(os.environ["NUMBER-OF-BACKUPS"])
-        dir_list = s3_client.list_objects_in_bucket()
-        number_of_backups = len(dir_list)
-        no_to_delete = number_of_backups - max_no
-        count = 0
-        for file in dir_list:
-            if(count < no_to_delete):
-                s3_client.delete_object(file)
-            count = count + 1
 
     def run(self) -> None:
         logging.info("Starting job")
@@ -80,6 +69,7 @@ class Job:
                 logging.info("Processing %s ", volume)
                 volume = Volume(volume)
                 volume.create_tarfile()
+                volume.create_backup_record
                 if mode == 'S3':
                     self.save_file_s3(s3_client=s3_client, filepath=volume.filename, filename=str(volume.id))
                     logging.info("Backup saved to S3")
@@ -89,4 +79,9 @@ class Job:
                 elif mode == 'FTP':
                     self.save_file_ftp(filename=volume.filename)
                     logging.info('Backup saved to FTP')
+                backups_to_delete = volume.old_backups()
+                if mode == 'S3':
+                    for backup in backups_to_delete:
+                        s3_client.delete_object(backup[0])
+                        volume.delete_backup_record(backup_id=backup[0])
                 volume.delete_tarfile()

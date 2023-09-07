@@ -29,7 +29,7 @@ def test_backup_record():
     db = Database()
     volume = Volume(volume_path='/test')
     current_backups = int(db.run_query('SELECT COUNT(*) FROM backups')[0][0])
-    volume.write_backup_record()
+    volume.create_backup_record()
     assert int(db.run_query('SELECT COUNT(*) FROM backups')[0][0]) == current_backups + 1
     backup_db_entry = db.run_query('SELECT * FROM backups LIMIT 1')[0]
     assert len(backup_db_entry) == 3

@@ -53,9 +53,25 @@ class Volume:
         with tarfile.open(self.filename, "w:gz") as tar:
             tar.add(self.volume_path, arcname="")
 
-    def write_backup_record(self) -> None:
+    def create_backup_record(self) -> None:
         query = f"INSERT INTO backups (volume, backup_date) VALUES ({str(self.id)}, '{self.datetime}')"
         db.run_command(query)
 
     def delete_tarfile(self) -> None:
         os.remove(self.filename)
+
+    def number_of_backups(self) -> int:
+        query = f"SELECT COUNT(*) FROM backups WHERE volume = {str(self.id)}"
+        return int(db.run_command(query)[0][0])
+    
+    def backup_records(self) -> tuple:
+        query = f"SELECT * FROM backups WHERE volume = {str(self.id)} ORDER BY backup_date ASC "
+        return (db.run_query(query))
+
+    def delete_backup_record(self, backup_id: str) -> None:
+        query = f"DELETE FROM backups WHERE id = {backup_id} AND volume = {str(self.id)}"
+        db.run_command(query)
+
+    def old_backups(self) -> None:        
+        query = f'SELECT * FROM backups WHERE volume = {str(self.id)} ORDER BY backup_date ASC LIMIT {os.environ["NUMBER-OF-BACKUPS"]}'
+        return (db.run_query(query))
