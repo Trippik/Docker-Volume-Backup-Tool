@@ -62,7 +62,7 @@ class Volume:
 
     def number_of_backups(self) -> int:
         query = f"SELECT COUNT(*) FROM backups WHERE volume = {str(self.id)}"
-        return int(db.run_command(query)[0][0])
+        return int(db.run_query(query)[0][0])
     
     def backup_records(self) -> tuple:
         query = f"SELECT * FROM backups WHERE volume = {str(self.id)} ORDER BY backup_date ASC "
@@ -72,6 +72,15 @@ class Volume:
         query = f"DELETE FROM backups WHERE id = {backup_id} AND volume = {str(self.id)}"
         db.run_command(query)
 
-    def old_backups(self) -> None:        
-        query = f'SELECT * FROM backups WHERE volume = {str(self.id)} ORDER BY backup_date ASC LIMIT {os.environ["NUMBER-OF-BACKUPS"]}'
+    def old_backup_records(self, no_old_backups) -> None:        
+        query = f'SELECT * FROM backups WHERE volume = {str(self.id)} ORDER BY backup_date ASC LIMIT {str(no_old_backups)}'
         return (db.run_query(query))
+    
+    def old_backups(self) -> tuple:
+        no_backups = self.number_of_backups()
+        if no_backups > int(os.environ["NUMBER-OF-BACKUPS"]):
+            no_old_backups = no_backups - int(os.environ["NUMBER-OF-BACKUPS"])
+            old_backup_records = self.old_backup_records(no_old_backups)
+        else:
+            old_backup_records = []
+        return old_backup_records

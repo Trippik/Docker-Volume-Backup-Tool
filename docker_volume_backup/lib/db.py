@@ -29,14 +29,14 @@ class Database:
             self.cursor.execute(command)
             self.conn.commit()
         except OperationalError as msg:
-            logging.error("Command skipped: ", msg)
+            logging.error(f"Command skipped: {msg}")
 
     def run_query(self, query: str) -> tuple:
         try:
             self.cursor.execute(query)
             rows = self.cursor.fetchall()
         except OperationalError as msg:
-            logging.error("Command skipped: ", msg)
+            logging.error(f"Command skipped: {msg}")
         return(rows)
 
     def run_commands_from_file(self, filepath: str) -> None:
