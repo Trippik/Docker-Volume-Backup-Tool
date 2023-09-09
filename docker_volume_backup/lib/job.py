@@ -1,7 +1,6 @@
 import os
 import datetime
 import logging
-import tarfile
 from venv import create
 import ftplib
 import pysftp
