@@ -33,7 +33,7 @@ def test_backup_record():
     volume.create_backup_record()
     assert int(db.run_query('SELECT COUNT(*) FROM backups')[0][0]) == current_backups + 1
     backup_db_entry = db.run_query('SELECT * FROM backups LIMIT 1')[0]
-    assert len(backup_db_entry) == 3
+    assert len(backup_db_entry) == 4
 
 def test_return_old_backup_records():
     from docker_volume_backup.lib.volume import Volume

@@ -68,9 +68,9 @@ class Job:
                 logging.info("Processing %s ", volume)
                 volume = Volume(volume)
                 volume.create_tarfile()
-                volume.create_backup_record
+                volume.create_backup_record()
                 if mode == 'S3':
-                    self.save_file_s3(s3_client=s3_client, filepath=volume.filename, filename=str(volume.id))
+                    self.save_file_s3(s3_client=s3_client, filepath=volume.filename, filename=str(volume.filename))
                     logging.info("Backup saved to S3")
                 elif mode == 'SFTP':
                     self.save_file_sftp(filename=volume.filename)
@@ -81,6 +81,6 @@ class Job:
                 backups_to_delete = volume.old_backups()
                 if mode == 'S3':
                     for backup in backups_to_delete:
-                        s3_client.delete_object(backup[0])
-                        volume.delete_backup_record(backup_id=backup[0])
+                        s3_client.delete_object(str(backup[1]))
+                        volume.delete_backup_record(backup_id=str(backup[0]))
                 volume.delete_tarfile()

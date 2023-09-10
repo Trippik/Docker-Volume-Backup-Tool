@@ -54,8 +54,12 @@ class Volume:
             tar.add(self.volume_path, arcname="")
 
     def create_backup_record(self) -> None:
-        query = f"INSERT INTO backups (volume, backup_date) VALUES ({str(self.id)}, '{self.datetime}')"
+        query = f"INSERT INTO backups (backup_name, volume, backup_date) VALUES ('{self.filename}', {str(self.id)}, '{self.datetime}')"
         db.run_command(query)
+
+    def backup_id(self) -> int:
+        query = f"SELECT id FROM backups WHERE backup_date = '{self.datetime}'"
+        return int(db.run_query(query)[0][0])
 
     def delete_tarfile(self) -> None:
         os.remove(self.filename)
