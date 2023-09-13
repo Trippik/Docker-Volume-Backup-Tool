@@ -3,3 +3,4 @@ boto3
 moto
 freezegun
 ipython
+pysmb

@@ -13,4 +13,3 @@ def test_job_creation():
     assert type(job) == Job
     assert job.modes == test_modes
     assert job.volumes == test_volumes
-
