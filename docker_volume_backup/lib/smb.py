@@ -16,3 +16,6 @@ class SMBClient:
         file = open(filepath, 'rb')
         with file:
             self.client.storeFile(service_name=self.share_name, path=filename, file_obj=file)
+    
+    def delete_file(self, filename:str) -> None:
+        self.client.deleteFiles(self.share_name, filename)
