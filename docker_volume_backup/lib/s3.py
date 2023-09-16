@@ -9,7 +9,7 @@ class S3Client:
         self.client = self.session.client('s3')
         self.bucket = os.environ["BUCKET"]
 
-    def list_objects_in_bucket(self) -> None:
+    def list_objects_in_bucket(self) -> list:
         response = self.client.list_objects_v2(Bucket=self.bucket)
         objects_in_bucket = []
         try:

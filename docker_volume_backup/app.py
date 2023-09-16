@@ -40,13 +40,8 @@ def main():
                         full_directories.append(vol_directory + sub_directory)
                 else:
                     full_directories = [vol_directory]
-                for mode in running_modes:
-                    try:
-                        logging.info("Saving backups to %s", mode)
-                        job = Job(mode, full_directories)
-                        job.run()
-                    except Exception:
-                        logging.exception("Error when completing backup to %s", mode)
+                job = Job(modes=modes, volumes=full_directories)
+                job.run()
                 run_state = 1
                 logging.warning("---------------------")
         elif(int(datetime.datetime.now().strftime("%H")) != int(os.environ["REPORTING_HOUR"]) and run_state == 1):

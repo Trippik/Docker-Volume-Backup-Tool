@@ -40,4 +40,8 @@ ENV SECRET-KEY = "Placeholder"
 
 ENV BUCKET = "Placeholder"
 
+ENV DB-FILEPATH = "/databases/volume_backup_tool.db"
+
+ENV SMB-SHARE = "Placeholder"
+
 CMD [ "Docker-Volume-Backup-Tool" ]
