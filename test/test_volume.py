@@ -6,6 +6,7 @@ os.environ["DB-FILEPATH"] = 'test-vol.db'
 if os.path.isfile(os.environ["DB-FILEPATH"]):
     os.remove(os.environ["DB-FILEPATH"])
 os.environ["NUMBER-OF-BACKUPS"] = "1"
+os.environ["DB-TYPE"] = "SQLite"
 
 def test_volume_import():
     from docker_volume_backup.lib.volume import Volume
@@ -26,8 +27,8 @@ def test_filename_generation():
 
 def test_backup_record():
     from docker_volume_backup.lib.volume import Volume
-    from docker_volume_backup.lib.db import Database
-    db = Database()
+    from docker_volume_backup.lib.db import SQLiteDatabase
+    db = SQLiteDatabase()
     volume = Volume(volume_path='/test')
     current_backups = int(db.run_query('SELECT COUNT(*) FROM backups')[0][0])
     volume.create_backup_record()
@@ -37,8 +38,8 @@ def test_backup_record():
 
 def test_return_old_backup_records():
     from docker_volume_backup.lib.volume import Volume
-    from docker_volume_backup.lib.db import Database
-    db = Database()
+    from docker_volume_backup.lib.db import SQLiteDatabase
+    db = SQLiteDatabase()
     db.run_command("DELETE FROM backups") 
     volume = Volume(volume_path='/test')
     volume.create_backup_record()

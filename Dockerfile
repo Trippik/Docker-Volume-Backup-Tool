@@ -18,29 +18,41 @@ RUN pip3 install -r requirements.txt
 
 RUN python3 setup.py install
 
-ENV TARGET-MODES = "['Placeholder','Placeholder']"
+ENV TARGET-MODES "['Placeholder','Placeholder']"
 
-ENV SUB-DIRECTORIES = "['beep/boop', 'boop/beep']"
+ENV SUB-DIRECTORIES "['beep/boop', 'boop/beep']"
 
-ENV STORAGE-SERVER = "Placeholder"
+ENV STORAGE-SERVER "Placeholder"
 
-ENV USERNAME = "Placeholder"
+ENV USERNAME "Placeholder"
 
-ENV PASSWORD = "Placeholder"
+ENV PASSWORD "Placeholder"
 
-ENV PORT = "Placeholder"
+ENV PORT "Placeholder"
 
-ENV NUMBER-OF-BACKUPS = "Placeholder"
+ENV NUMBER-OF-BACKUPS "Placeholder"
 
-ENV REPORTING_HOUR = "Placeholder"
+ENV REPORTING_HOUR "Placeholder"
 
-ENV ACCESS-KEY-ID = "Placeholder"
+ENV ACCESS-KEY-ID "Placeholder"
 
-ENV SECRET-KEY = "Placeholder"
+ENV SECRET-KEY "Placeholder"
 
-ENV BUCKET = "Placeholder"
+ENV BUCKET "Placeholder"
 
-ENV DB-FILEPATH = "/databases/volume_backup_tool.db"
+ENV DB-FILEPATH "/databases/volume_backup_tool.db"
+
+ENV DB-TYPE "SQLite"
+
+ENV DB-HOST "Placeholder"
+
+ENV DB-PORT "0000"
+
+ENV DB-USER "Placeholder"
+
+ENV DB-SCHEMA "volume-backup-tool"
+
+ENV DB-PASSWORD "Placeholder"
 
 ENV SMB-SHARE = "Placeholder"
 

@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:latest
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_DB: volume-backup-tool
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: user
+  
+  backend:
+    depends_on:
+      - db
+    links:
+      - db
+    image: trippik/docker-volume-backup-tool:latest
+    volumes:
+      - /var/lib/docker/volumes:/vols_path
+    environment:
+      DB-TYPE: PostgreSQL
+      DB-PORT: 5432
+      DB-HOST: db
+      DB-USER: user
+      DB-PASSWORD: test
+      DB-SCHEMA: volume-backup-tool
+
+volumes:
+  db_data: {}

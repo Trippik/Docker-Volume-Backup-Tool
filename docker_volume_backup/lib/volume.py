@@ -3,9 +3,7 @@ import datetime
 import logging
 import tarfile
 
-from docker_volume_backup.lib.db import Database
-
-db = Database()
+from docker_volume_backup.lib.db import db
 
 class Volume:
     def __init__(self, volume_path):
